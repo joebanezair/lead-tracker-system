@@ -1,1 +1,68 @@
-import{useEffect,useRef,useState}from'react';import{FiMail,FiLock}from'react-icons/fi';const GOOGLE_CLIENT_ID=import.meta.env.VITE_GOOGLE_CLIENT_ID;export default function LoginPage({onGoogleLogin,onLogin,onShowSignup}){const googleButton=useRef(null);const[email,setEmail]=useState('');const[password,setPassword]=useState('');useEffect(()=>{if(!GOOGLE_CLIENT_ID)return;const init=()=>{if(!window.google||!googleButton.current)return;window.google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:r=>onGoogleLogin(r.credential)});window.google.accounts.id.renderButton(googleButton.current,{theme:'outline',size:'large',width:360,text:'continue_with'})};if(window.google)init();else{const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=init;document.head.appendChild(s)}},[onGoogleLogin]);return <div className="auth-shell"><form className="auth-card" onSubmit={e=>{e.preventDefault();onLogin({email,password})}}><h1>Welcome to LeadTracker</h1><p>Sign in to manage, deduplicate and track your leads.</p><label><FiMail/> Email</label><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/><label><FiLock/> Password</label><input required type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••"/><button className="auth-primary">Sign In</button><div className="divider"><span>OR</span></div>{GOOGLE_CLIENT_ID?<div ref={googleButton} className="google-button"/>:<button className="google-placeholder" type="button" disabled>G&nbsp;&nbsp; Continue with Google</button>}<small>{!GOOGLE_CLIENT_ID&&'Google sign-in will activate after VITE_GOOGLE_CLIENT_ID is configured.'}</small><p className="auth-switch">Don't have an account? <button type="button" onClick={onShowSignup}>Create Account</button></p></form></div>
+import { useEffect, useRef, useState } from 'react';
+import { FiMail, FiLock } from 'react-icons/fi';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+export default function LoginPage({ onGoogleLogin, onLogin, onShowSignup }) {
+  const googleButton = useRef(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return;
+
+    const init = () => {
+      if (!window.google || !googleButton.current) return;
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: r => onGoogleLogin(r.credential)
+      });
+      window.google.accounts.id.renderButton(googleButton.current, {
+        theme: 'outline',
+        size: 'large',
+        width: 360,
+        text: 'continue_with'
+      });
+    };
+
+    if (window.google) {
+      init();
+    } else {
+      const s = document.createElement('script');
+      s.src = 'https://accounts.google.com/gsi/client';
+      s.async = true;
+      s.onload = init;
+      document.head.appendChild(s);
+    }
+  }, [onGoogleLogin]);
+
+  return (
+    <div className="auth-shell">
+      <form
+        className="auth-card"
+        onSubmit={e => {
+          e.preventDefault();
+          onLogin({ email, password });
+        }}
+      >
+        <h1>Welcome to LeadTracker</h1>
+        <p>Sign in to manage, deduplicate and track your leads.</p>
+        <label><FiMail /> Email</label>
+        <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
+        <label><FiLock /> Password</label>
+        <input required type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+        <button className="auth-primary">Sign In</button>
+        <div className="divider"><span>OR</span></div>
+        {GOOGLE_CLIENT_ID
+          ? <div ref={googleButton} className="google-button" />
+          : <button className="google-placeholder" type="button" disabled>G&nbsp;&nbsp; Continue with Google</button>}
+        <small>
+          {!GOOGLE_CLIENT_ID && 'Google sign-in will activate after VITE_GOOGLE_CLIENT_ID is configured.'}
+        </small>
+        <p className="auth-switch">
+          Don't have an account? <button type="button" onClick={onShowSignup}>Create Account</button>
+        </p>
+      </form>
+    </div>
+  );
+}
