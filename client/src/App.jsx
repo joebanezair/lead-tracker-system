@@ -42,6 +42,17 @@ export default function App() {
     localStorage.setItem('lead-tracker-theme', theme);
   }, [theme]);
 
+  const refreshStats = useCallback(async () => {
+    if (!user) return;
+    const token = localStorage.getItem('lead-tracker-token');
+    try {
+      const response = await fetch(API + '/api/leads/stats', { headers: { Authorization: 'Bearer ' + token } });
+      if (response.ok) setStats(await response.json());
+    } catch {}
+  }, [user]);
+
+  useEffect(() => { refreshStats(); }, [refreshStats]);
+
   useEffect(() => {
     if (!user) return;
 
@@ -146,7 +157,7 @@ export default function App() {
   const pages = {
     dashboard: <DashboardPage stats={stats} events={events} />,
     leads: <LeadsPage />,
-    import: <ImportLeadsPage />,
+    import: <ImportLeadsPage onImported={refreshStats} />,
     history: <ImportHistoryPage />,
     duplicates: <DuplicatesPage />,
     invalid: <InvalidLeadsPage />,
