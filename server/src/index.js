@@ -1,0 +1,6 @@
+import 'dotenv/config';import express from'express';import cors from'cors';import{createServer}from'http';import{Server}from'socket.io';import mongoose from'mongoose';
+const app=express();const server=createServer(app);const origin=process.env.CLIENT_URL||'http://localhost:5173';const io=new Server(server,{cors:{origin}});app.use(cors({origin}));app.use(express.json());
+app.get('/api/health',(req,res)=>res.json({ok:true,service:'lead-tracker-api',realtime:true}));
+app.post('/api/demo/import',(req,res)=>{const batchId='IMPORT-'+Date.now();res.status(202).json({batchId,status:'QUEUED'});let p=0;const t=setInterval(()=>{p+=10;io.emit('import:progress',{batchId,progress:p,status:p===100?'COMPLETED':'PROCESSING'});if(p===100)clearInterval(t)},400)});
+io.on('connection',socket=>{socket.emit('system:ready',{message:'Realtime lead updates connected'});socket.on('join:import',batchId=>socket.join('import:'+batchId));});
+const port=process.env.PORT||5000;async function start(){if(process.env.MONGO_URI)try{await mongoose.connect(process.env.MONGO_URI);console.log('MongoDB connected')}catch(e){console.error('MongoDB unavailable:',e.message)}server.listen(port,()=>console.log('API + WebSocket server on '+port))}start();
