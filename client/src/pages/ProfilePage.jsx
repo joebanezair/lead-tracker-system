@@ -18,6 +18,7 @@ export default function ProfilePage({ user, onUserUpdated }) {
   const [profile, setProfile] = useState({
     name: user?.name || '',
     bio: '',
+    occupation: '',
     avatar: user?.avatar || '',
     coverPhoto: '',
     avatarPositionX: 50,
@@ -80,9 +81,9 @@ export default function ProfilePage({ user, onUserUpdated }) {
         },
         body: JSON.stringify(profile)
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
 
-      if (!response.ok) throw new Error(data.message || 'Could not save profile');
+      if (!response.ok) throw new Error(data.message || `Could not save profile (${response.status})`);
 
       setProfile(data);
       onUserUpdated?.(data);
@@ -166,6 +167,15 @@ export default function ProfilePage({ user, onUserUpdated }) {
             <input
               value={profile.name}
               onChange={event => setProfile(current => ({ ...current, name: event.target.value }))}
+            />
+          </label>
+          <label>
+            Occupation
+            <input
+              maxLength="120"
+              value={profile.occupation || ''}
+              onChange={event => setProfile(current => ({ ...current, occupation: event.target.value }))}
+              placeholder="e.g. Software Developer"
             />
           </label>
           <label>
