@@ -10,6 +10,7 @@ import ImportHistoryPage from './pages/ImportHistoryPage.jsx';
 import DuplicatesPage from './pages/DuplicatesPage.jsx';
 import InvalidLeadsPage from './pages/InvalidLeadsPage.jsx';
 import ExportCenterPage from './pages/ExportCenterPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -149,7 +150,17 @@ export default function App() {
     history: <ImportHistoryPage />,
     duplicates: <DuplicatesPage />,
     invalid: <InvalidLeadsPage />,
-    export: <ExportCenterPage />
+    export: <ExportCenterPage />,
+    profile: (
+      <ProfilePage
+        user={user}
+        onUserUpdated={updated => {
+          const nextUser = { ...user, ...updated };
+          localStorage.setItem('lead-tracker-user', JSON.stringify(nextUser));
+          setUser(nextUser);
+        }}
+      />
+    )
   };
 
   return (
