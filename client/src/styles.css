@@ -13,13 +13,13 @@
   color-scheme:light}
 
 html[data-theme="dark"] {
-  --bg:#0b1120;
-  --surface:#111827;
-  --surface2:#182235;
-  --text:#f1f5f9;
-  --muted:#94a3b8;
-  --border:#293548;
-  --sidebar:#061d17;
+  --bg:#071a14;
+  --surface:#0d261e;
+  --surface2:#123329;
+  --text:#eef8f3;
+  --muted:#a8c8bc;
+  --border:#214b3d;
+  --sidebar:#04140f;
   --sidebarText:#b8d4ca;
   --button:#2f8f70;
   --buttonText:#fff;
