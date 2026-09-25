@@ -18,10 +18,28 @@ const profileResponse = user => ({
   role: user.role
 });
 
+async function resolveUser(req) {
+  let user = null;
+
+  if (req.auth?.sub) {
+    user = await User.findById(req.auth.sub).catch(() => null);
+  }
+
+  if (!user && req.auth?.email) {
+    user = await User.findOne({ email: req.auth.email.toLowerCase() });
+  }
+
+  return user;
+}
+
 router.get('/', async (req, res) => {
   try {
-    const user = await User.findById(req.auth.sub);
-    if (!user) return res.status(404).json({ message: 'Profile not found' });
+    const user = await resolveUser(req);
+    if (!user) {
+      return res.status(404).json({
+        message: 'Your signed-in account is no longer linked to a user record. Please sign out and sign in again.'
+      });
+    }
     res.json(profileResponse(user));
   } catch {
     res.status(500).json({ message: 'Could not load profile' });
@@ -30,8 +48,12 @@ router.get('/', async (req, res) => {
 
 router.patch('/', async (req, res) => {
   try {
-    const user = await User.findById(req.auth.sub);
-    if (!user) return res.status(404).json({ message: 'Profile not found' });
+    const user = await resolveUser(req);
+    if (!user) {
+      return res.status(404).json({
+        message: 'Your signed-in account is no longer linked to a user record. Please sign out and sign in again.'
+      });
+    }
 
     const { name, bio, occupation, avatar, coverPhoto, avatarPositionX, avatarPositionY } = req.body;
 
