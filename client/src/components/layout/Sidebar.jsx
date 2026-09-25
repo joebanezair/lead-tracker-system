@@ -7,7 +7,9 @@ import {
   FiAlertTriangle,
   FiDownload,
   FiMoon,
-  FiSun
+  FiSun,
+  FiBell,
+  FiLogOut
 } from 'react-icons/fi';
 
 const items = [
@@ -20,10 +22,27 @@ const items = [
   ['export', FiDownload, 'Export Center']
 ];
 
-export default function Sidebar({ page, setPage, theme, toggleTheme }) {
+export default function Sidebar({
+  page,
+  setPage,
+  theme,
+  toggleTheme,
+  user,
+  notifications,
+  showNotifications,
+  onToggleNotifications,
+  onReadAll,
+  onLogout
+}) {
+  const unread = notifications.filter(notification => !notification.read).length;
+
   return (
     <aside>
       <h2>LeadTracker</h2>
+      <div className="sidebar-user">
+        <strong>{user?.name || user?.email}</strong>
+        <span>{user?.role}</span>
+      </div>
       <nav>
         {items.map(([id, I, label]) => (
           <button
@@ -36,9 +55,47 @@ export default function Sidebar({ page, setPage, theme, toggleTheme }) {
           </button>
         ))}
       </nav>
+      <div className="notification-wrap">
+        <button className="sidebar-action" onClick={onToggleNotifications}>
+          <FiBell />
+          Notifications
+          {unread > 0 && <span className="notification-badge">{unread}</span>}
+        </button>
+        {showNotifications && (
+          <div className="notification-panel">
+            <div className="notification-heading">
+              <strong>Notifications</strong>
+              {unread > 0 && <button onClick={onReadAll}>Mark all read</button>}
+            </div>
+            {notifications.length ? (
+              notifications.map(notification => (
+                <div
+                  className={notification.read ? 'notification' : 'notification unread'}
+                  key={notification._id}
+                >
+                  <FiBell />
+                  <div>
+                    <b>{notification.message}</b>
+                    <small>
+                      {notification.createdAt
+                        ? new Date(notification.createdAt).toLocaleString()
+                        : ''}
+                    </small>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="notification-empty">No notifications yet.</p>
+            )}
+          </div>
+        )}
+      </div>
       <button className="theme-toggle" onClick={toggleTheme}>
         {theme === 'dark' ? <FiSun /> : <FiMoon />}
         {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+      </button>
+      <button className="logout-button" onClick={onLogout}>
+        <FiLogOut /> Logout
       </button>
     </aside>
   );
