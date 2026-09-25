@@ -9,7 +9,8 @@ import {
   FiMoon,
   FiSun,
   FiBell,
-  FiLogOut
+  FiLogOut,
+  FiUser
 } from 'react-icons/fi';
 
 const items = [
@@ -19,7 +20,8 @@ const items = [
   ['history', FiClock, 'Import History'],
   ['duplicates', FiCopy, 'Duplicates'],
   ['invalid', FiAlertTriangle, 'Invalid Leads'],
-  ['export', FiDownload, 'Export Center']
+  ['export', FiDownload, 'Export Center'],
+  ['profile', FiUser, 'Profile']
 ];
 
 export default function Sidebar({
