@@ -1,1 +1,23 @@
-import PageHeader from'../components/layout/PageHeader.jsx';import EmptyState from'../components/common/EmptyState.jsx';export default function LeadsPage(){return <><PageHeader title="Leads" description="Search, filter, rate and review master lead records."/><section className="panel"><input className="search" placeholder="Search leads by email, company or contact…"/><EmptyState title="No leads loaded yet" description="Import a spreadsheet to populate the master lead database."/></section></>}
+import PageHeader from '../components/layout/PageHeader.jsx';
+import EmptyState from '../components/common/EmptyState.jsx';
+
+export default function LeadsPage() {
+  return (
+    <>
+      <PageHeader
+        title="Leads"
+        description="Search, filter, rate and review master lead records."
+      />
+      <section className="panel">
+        <input
+          className="search"
+          placeholder="Search leads by email, company or contact…"
+        />
+        <EmptyState
+          title="No leads loaded yet"
+          description="Import a spreadsheet to populate the master lead database."
+        />
+      </section>
+    </>
+  );
+}
