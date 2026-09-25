@@ -1,0 +1,1 @@
+export default function EmptyState({title,description}){return <div className="empty"><b>{title}</b><p>{description}</p></div>}
