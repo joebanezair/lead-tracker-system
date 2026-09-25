@@ -1,5 +1,4 @@
 import { FiDownload, FiUploadCloud } from 'react-icons/fi';
-import * as XLSX from 'xlsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import FileDropzone from '../components/import/FileDropzone.jsx';
 
@@ -23,26 +22,62 @@ const columns = [
   'Notes'
 ];
 
-function downloadCsvTemplate() {
-  const csv = columns.map(value => `"${value.replaceAll('"', '""')}"`).join(',') + '\n';
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+function downloadFile(content, type, filename) {
+  const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
 
   link.href = url;
-  link.download = 'lead-import-template.csv';
+  link.download = filename;
+  link.style.display = 'none';
   document.body.appendChild(link);
   link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+
+  window.setTimeout(() => {
+    link.remove();
+    URL.revokeObjectURL(url);
+  }, 1000);
 }
 
-function downloadXlsxTemplate() {
-  const worksheet = XLSX.utils.aoa_to_sheet([columns]);
-  const workbook = XLSX.utils.book_new();
+function downloadCsvTemplate() {
+  const csv =
+    '\uFEFF' +
+    columns.map(value => `"${value.replaceAll('"', '""')}"`).join(',') +
+    '\r\n';
 
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
-  XLSX.writeFile(workbook, 'lead-import-template.xlsx');
+  downloadFile(
+    csv,
+    'text/csv;charset=utf-8',
+    'lead-import-template.csv'
+  );
+}
+
+async function downloadXlsxTemplate() {
+  try {
+    const XLSX = await import('xlsx');
+    const worksheet = XLSX.utils.aoa_to_sheet([columns]);
+    const workbook = XLSX.utils.book_new();
+
+    worksheet['!cols'] = columns.map(column => ({
+      wch: Math.max(column.length + 3, 14)
+    }));
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
+
+    const bytes = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array'
+    });
+
+    downloadFile(
+      bytes,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'lead-import-template.xlsx'
+    );
+  } catch (error) {
+    console.error('XLSX template download failed:', error);
+    alert('The XLSX template could not be generated. Please use the CSV template or try again.');
+  }
 }
 
 export default function ImportLeadsPage() {
@@ -59,10 +94,10 @@ export default function ImportLeadsPage() {
         <FileDropzone />
         <div className="actions">
           <button type="button" onClick={downloadXlsxTemplate}>
-            <FiDownload /> XLSX Template
+            <FiDownload /> Download XLSX Template
           </button>
           <button type="button" onClick={downloadCsvTemplate}>
-            <FiDownload /> CSV Template
+            <FiDownload /> Download CSV Template
           </button>
         </div>
       </section>
