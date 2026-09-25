@@ -408,3 +408,139 @@ main {
   border-radius:5px;
   background:var(--surface2);
 }
+
+
+.logout-button {
+  justify-content:center;
+  text-align:center;
+}
+
+.profile-card {
+  overflow:hidden;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:5px;
+}
+
+.profile-cover {
+  height:240px;
+  position:relative;
+  background:linear-gradient(135deg,#0b2e25,#2f8f70);
+  background-size:cover;
+  background-position:center;
+}
+
+.cover-edit {
+  position:absolute;
+  right:18px;
+  bottom:18px;
+  background:rgba(4,20,15,.86);
+  color:#fff;
+}
+
+.profile-avatar-row {
+  display:flex;
+  align-items:flex-end;
+  gap:18px;
+  padding:0 28px;
+  margin-top:-64px;
+  position:relative;
+}
+
+.profile-avatar {
+  width:144px;
+  height:144px;
+  border-radius:50%;
+  border:5px solid var(--surface);
+  background:var(--surface2);
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  touch-action:none;
+}
+
+.profile-avatar img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  user-select:none;
+  pointer-events:none;
+}
+
+.dragging-avatar {
+  cursor:move;
+  outline:3px solid #2f8f70;
+}
+
+.profile-photo-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding-bottom:12px;
+}
+
+.secondary-button {
+  background:var(--surface2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+.profile-form {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  padding:28px;
+}
+
+.profile-form label {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  font-weight:600;
+}
+
+.profile-form input,
+.profile-form textarea {
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:5px;
+  background:var(--surface2);
+  color:var(--text);
+  font:inherit;
+}
+
+.profile-form input:disabled {
+  opacity:.7;
+}
+
+.profile-bio {
+  grid-column:1 / -1;
+}
+
+.profile-save {
+  display:flex;
+  justify-content:flex-end;
+  padding:0 28px 28px;
+}
+
+@media (max-width: 700px) {
+  .profile-cover {
+    height:180px;
+  }
+
+  .profile-avatar-row {
+    align-items:center;
+    flex-direction:column;
+    margin-top:-55px;
+  }
+
+  .profile-form {
+    grid-template-columns:1fr;
+  }
+
+  .profile-bio {
+    grid-column:auto;
+  }
+}
