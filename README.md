@@ -48,12 +48,47 @@ Lead ownership is scoped by user so one user's private lead database does not au
 
 ## Authentication & Security
 
+The application now supports both local account authentication and Google Sign-In.
+
+### Sign Up
+- Dedicated Create Account page
+- Name, email, password, and password confirmation
+- Minimum 8-character password
+- Passwords hashed with bcryptjs before storage
+- Duplicate email protection
+- New registrations automatically receive the `user` role
+- Public registration cannot create an Admin account
+- Account status supports active, paused, and disabled states
+
+### Sign In
+- Email/password sign-in
+- Google Sign-In through Google Identity Services / OpenID Connect
+- Existing Google users are matched by verified email
+- First-time Google users are automatically created with the `user` role
+- Google authentication never automatically grants Admin access
+- JWT issued after successful authentication
+- Google ID tokens are verified by the backend
+
+### Security
 - JWT authentication
 - Password hashing with bcryptjs
-- Protected API routes
+- Google token verification with `google-auth-library`
+- Protected API routes planned across private resources
 - Admin/User authorization
 - User-scoped lead ownership
-- Refresh/session architecture planned for authenticated sessions
+- Refresh/session architecture planned for longer-lived authenticated sessions
+
+Required Google authentication configuration:
+
+```text
+Client:
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+
+Server:
+GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+```
+
+Google Sign-In remains disabled until a valid OAuth Client ID is configured.
 
 ## Dashboard
 
@@ -557,8 +592,9 @@ Planned REST API:
 /api/auth
   POST /register
   POST /login
-  POST /refresh
-  POST /logout
+  POST /google
+  POST /refresh     # planned
+  POST /logout      # planned
 
 /api/templates
   GET /xlsx
@@ -611,7 +647,15 @@ Planned REST API:
 ## End-to-End Workflow
 
 ```text
-REGISTER / LOGIN
+SIGN UP / SIGN IN
+       ↓
+┌──────────────────────┐
+│ Email + Password     │
+│         OR           │
+│ Continue with Google │
+└──────────────────────┘
+       ↓
+JWT AUTHENTICATION
        ↓
 DASHBOARD
        ↓
@@ -679,14 +723,32 @@ lead-tracker-system/
 │   └── src/
 │       ├── App.jsx
 │       ├── main.jsx
-│       └── styles.css
+│       ├── styles.css
+│       ├── components/
+│       │   ├── common/
+│       │   ├── dashboard/
+│       │   ├── import/
+│       │   └── layout/
+│       └── pages/
+│           ├── LoginPage.jsx
+│           ├── SignupPage.jsx
+│           ├── DashboardPage.jsx
+│           ├── LeadsPage.jsx
+│           ├── ImportLeadsPage.jsx
+│           ├── ImportHistoryPage.jsx
+│           ├── DuplicatesPage.jsx
+│           ├── InvalidLeadsPage.jsx
+│           └── ExportCenterPage.jsx
 │
 ├── server/
 │   ├── package.json
 │   ├── .env.example
 │   └── src/
 │       ├── index.js
+│       ├── routes/
+│       │   └── auth.js
 │       └── models/
+│           ├── User.js
 │           ├── Lead.js
 │           ├── ImportBatch.js
 │           ├── Comment.js
@@ -704,9 +766,10 @@ lead-tracker-system/
 3. Install client/server dependencies:
    `npm run install:all`
 4. Copy `server/.env.example` to `server/.env`.
-5. Configure `MONGO_URI`, `JWT_SECRET`, and `CLIENT_URL`.
-6. Start MongoDB.
-7. Run:
+5. Configure `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`, and `GOOGLE_CLIENT_ID`.
+6. Copy `client/.env.example` to `client/.env` and configure `VITE_GOOGLE_CLIENT_ID` if Google Sign-In is required.
+7. Start MongoDB.
+8. Run:
    `npm run dev`
 
 Default development URLs:
@@ -716,6 +779,6 @@ Default development URLs:
 
 ## Development Status
 
-The repository currently contains the initial MERN scaffold, React dashboard, React Icons integration, MongoDB models, and Socket.IO realtime foundation.
+The repository currently contains the MERN scaffold, separated React page/reusable component architecture, responsive light/dark themes with persistent preference, React Icons integration, local email/password registration and login, Google Sign-In integration, JWT issuance, the User/Lead/ImportBatch/Comment/Rating MongoDB models, and the Socket.IO realtime foundation.
 
 The remaining features described above form the implementation roadmap, including production authentication, full spreadsheet ingestion, flexible mapping, background import workers, complete deduplication/provenance processing, comments/ratings APIs, search, exports, and administration.
