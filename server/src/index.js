@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.js';
 import notificationRoutes from './routes/notifications.js';
 import createCommentRoutes from './routes/comments.js';
 import profileRoutes from './routes/profile.js';
+import leadRoutes from './routes/leads.js';
 
 const app = express();
 const server = createServer(app);
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', createCommentRoutes(io));
 app.use('/api/profile', profileRoutes);
+app.use('/api/leads', leadRoutes);
 
 app.get('/api/health', (req, res) =>
   res.json({
