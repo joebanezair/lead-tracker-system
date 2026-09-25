@@ -1,1 +1,19 @@
-import PageHeader from'../components/layout/PageHeader.jsx';import EmptyState from'../components/common/EmptyState.jsx';export default function ImportHistoryPage(){return <><PageHeader title="Import History" description="Review batches, metadata, status and processing results."/><section className="panel"><EmptyState title="No import history" description="Completed and active import batches will appear here."/></section></>}
+import PageHeader from '../components/layout/PageHeader.jsx';
+import EmptyState from '../components/common/EmptyState.jsx';
+
+export default function ImportHistoryPage() {
+  return (
+    <>
+      <PageHeader
+        title="Import History"
+        description="Review batches, metadata, status and processing results."
+      />
+      <section className="panel">
+        <EmptyState
+          title="No import history"
+          description="Completed and active import batches will appear here."
+        />
+      </section>
+    </>
+  );
+}
