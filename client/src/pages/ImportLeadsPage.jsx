@@ -81,8 +81,33 @@ async function downloadXlsxTemplate() {
   }
 }
 
-export default function ImportLeadsPage() {
+export default function ImportLeadsPage({ onImported }) {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [importing, setImporting] = useState(false);
+
+  const importLeads = async () => {
+    if (!selectedFile) return alert('Choose a spreadsheet first.');
+    setImporting(true);
+    try {
+      const form = new FormData();
+      form.append('file', selectedFile);
+      const token = localStorage.getItem('lead-tracker-token');
+      const response = await fetch((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/leads/import', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: form
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Import failed');
+      alert(`Import complete: ${data.newLeads} new, ${data.duplicates} duplicates, ${data.invalid} invalid.`);
+      onImported?.();
+      setSelectedFile(null);
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setImporting(false);
+    }
+  };
 
   return (
     <>
@@ -104,6 +129,9 @@ export default function ImportLeadsPage() {
         )}
 
         <div className="actions">
+          <button type="button" onClick={importLeads} disabled={!selectedFile || importing}>
+            <FiUploadCloud /> {importing ? 'Importing...' : 'Import Selected File'}
+          </button>
           <button type="button" onClick={downloadXlsxTemplate}>
             <FiDownload /> Download XLSX Template
           </button>
