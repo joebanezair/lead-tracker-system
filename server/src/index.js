@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import authRoutes from './routes/auth.js';
 import notificationRoutes from './routes/notifications.js';
 import createCommentRoutes from './routes/comments.js';
+import profileRoutes from './routes/profile.js';
 
 const app = express();
 const server = createServer(app);
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', createCommentRoutes(io));
+app.use('/api/profile', profileRoutes);
 
 app.get('/api/health', (req, res) =>
   res.json({
