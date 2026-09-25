@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FiDownload, FiUploadCloud } from 'react-icons/fi';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import FileDropzone from '../components/import/FileDropzone.jsx';
@@ -40,16 +41,21 @@ function downloadFile(content, type, filename) {
 }
 
 function downloadCsvTemplate() {
+  try {
   const csv =
     '\uFEFF' +
     columns.map(value => `"${value.replaceAll('"', '""')}"`).join(',') +
     '\r\n';
 
-  downloadFile(
-    csv,
-    'text/csv;charset=utf-8',
-    'lead-import-template.csv'
-  );
+    downloadFile(
+      csv,
+      'text/csv;charset=utf-8',
+      'lead-import-template.csv'
+    );
+  } catch (error) {
+    console.error('CSV template download failed:', error);
+    alert('The CSV template could not be downloaded. Please try again.');
+  }
 }
 
 async function downloadXlsxTemplate() {
@@ -81,6 +87,8 @@ async function downloadXlsxTemplate() {
 }
 
 export default function ImportLeadsPage() {
+  const [selectedFile, setSelectedFile] = useState(null);
+
   return (
     <>
       <PageHeader
@@ -91,7 +99,12 @@ export default function ImportLeadsPage() {
         <h3>
           <FiUploadCloud /> Import up to 100,000 leads
         </h3>
-        <FileDropzone />
+        <FileDropzone onFileSelected={setSelectedFile} />
+        {selectedFile && (
+          <div className="selected-file">
+            <strong>Ready to import:</strong> {selectedFile.name}
+          </div>
+        )}
         <div className="actions">
           <button type="button" onClick={downloadXlsxTemplate}>
             <FiDownload /> Download XLSX Template
