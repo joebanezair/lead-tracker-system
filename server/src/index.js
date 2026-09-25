@@ -16,7 +16,7 @@ const origin = process.env.CLIENT_URL || 'http://localhost:5173';
 const io = new Server(server, { cors: { origin } });
 
 app.use(cors({ origin }));
-app.use(express.json());
+app.use(express.json({ limit: '12mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', createCommentRoutes(io));
