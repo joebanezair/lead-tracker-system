@@ -23,44 +23,38 @@ const columns = [
   'Notes'
 ];
 
-function downloadFile(content, type, filename) {
-  const blob = new Blob([content], { type });
+function triggerDownload(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
 
   link.href = url;
   link.download = filename;
-  link.style.display = 'none';
+  link.setAttribute('download', filename);
   document.body.appendChild(link);
   link.click();
 
   window.setTimeout(() => {
-    link.remove();
     URL.revokeObjectURL(url);
-  }, 1000);
+    link.remove();
+  }, 5000);
 }
 
 function downloadCsvTemplate() {
-  try {
   const csv =
     '\uFEFF' +
     columns.map(value => `"${value.replaceAll('"', '""')}"`).join(',') +
     '\r\n';
 
-    downloadFile(
-      csv,
-      'text/csv;charset=utf-8',
-      'lead-import-template.csv'
-    );
-  } catch (error) {
-    console.error('CSV template download failed:', error);
-    alert('The CSV template could not be downloaded. Please try again.');
-  }
+  triggerDownload(
+    new Blob([csv], { type: 'text/csv;charset=utf-8' }),
+    'lead-import-template.csv'
+  );
 }
 
 async function downloadXlsxTemplate() {
   try {
-    const XLSX = await import('xlsx');
+    const module = await import('xlsx');
+    const XLSX = module.default || module;
     const worksheet = XLSX.utils.aoa_to_sheet([columns]);
     const workbook = XLSX.utils.book_new();
 
@@ -70,19 +64,20 @@ async function downloadXlsxTemplate() {
 
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
 
-    const bytes = XLSX.write(workbook, {
+    const data = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array'
     });
 
-    downloadFile(
-      bytes,
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    triggerDownload(
+      new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      }),
       'lead-import-template.xlsx'
     );
   } catch (error) {
     console.error('XLSX template download failed:', error);
-    alert('The XLSX template could not be generated. Please use the CSV template or try again.');
+    alert('Unable to create the XLSX template. Please refresh the app and try again.');
   }
 }
 
@@ -99,12 +94,15 @@ export default function ImportLeadsPage() {
         <h3>
           <FiUploadCloud /> Import up to 100,000 leads
         </h3>
+
         <FileDropzone onFileSelected={setSelectedFile} />
+
         {selectedFile && (
           <div className="selected-file">
             <strong>Ready to import:</strong> {selectedFile.name}
           </div>
         )}
+
         <div className="actions">
           <button type="button" onClick={downloadXlsxTemplate}>
             <FiDownload /> Download XLSX Template
