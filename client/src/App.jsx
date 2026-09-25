@@ -27,6 +27,8 @@ export default function App() {
     }
   });
   const [events, setEvents] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     unique: 0,
@@ -42,7 +44,15 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
 
-    const s = io(API);
+    const token = localStorage.getItem('lead-tracker-token');
+    const s = io(API, { auth: { token } });
+
+    fetch(API + '/api/notifications', {
+      headers: { Authorization: 'Bearer ' + token }
+    })
+      .then(r => (r.ok ? r.json() : []))
+      .then(setNotifications)
+      .catch(() => {});
     s.on('connect', () =>
       setEvents(x => ['Realtime connection established', ...x].slice(0, 8))
     );
@@ -55,6 +65,10 @@ export default function App() {
     s.on('lead:created', () =>
       setStats(x => ({ ...x, total: x.total + 1, unique: x.unique + 1 }))
     );
+    s.on('notification:created', notification => {
+      setNotifications(x => [notification, ...x]);
+      setEvents(x => [notification.message, ...x].slice(0, 8));
+    });
 
     return () => s.disconnect();
   }, [user]);
@@ -93,6 +107,26 @@ export default function App() {
     saveAuth(data);
   };
 
+  const logout = () => {
+    localStorage.removeItem('lead-tracker-token');
+    localStorage.removeItem('lead-tracker-user');
+    setNotifications([]);
+    setShowNotifications(false);
+    setUser(null);
+  };
+
+  const readAllNotifications = async () => {
+    const token = localStorage.getItem('lead-tracker-token');
+    const r = await fetch(API + '/api/notifications/read-all', {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer ' + token }
+    });
+
+    if (r.ok) {
+      setNotifications(x => x.map(notification => ({ ...notification, read: true })));
+    }
+  };
+
   if (!user) {
     return authPage === 'signup' ? (
       <SignupPage
@@ -125,6 +159,12 @@ export default function App() {
         setPage={setPage}
         theme={theme}
         toggleTheme={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
+        user={user}
+        notifications={notifications}
+        showNotifications={showNotifications}
+        onToggleNotifications={() => setShowNotifications(value => !value)}
+        onReadAll={readAllNotifications}
+        onLogout={logout}
       />
       <main>{pages[page]}</main>
     </div>
