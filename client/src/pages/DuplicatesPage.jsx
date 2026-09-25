@@ -1,1 +1,19 @@
-import PageHeader from'../components/layout/PageHeader.jsx';import EmptyState from'../components/common/EmptyState.jsx';export default function DuplicatesPage(){return <><PageHeader title="Duplicate Leads" description="Audit duplicates without destroying their original source data."/><section className="panel"><EmptyState title="No duplicates yet" description="Duplicate occurrences and their surviving master leads will appear here."/></section></>}
+import PageHeader from '../components/layout/PageHeader.jsx';
+import EmptyState from '../components/common/EmptyState.jsx';
+
+export default function DuplicatesPage() {
+  return (
+    <>
+      <PageHeader
+        title="Duplicate Leads"
+        description="Audit duplicates without destroying their original source data."
+      />
+      <section className="panel">
+        <EmptyState
+          title="No duplicates yet"
+          description="Duplicate occurrences and their surviving master leads will appear here."
+        />
+      </section>
+    </>
+  );
+}
