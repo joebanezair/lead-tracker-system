@@ -4,7 +4,10 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import authRoutes from './routes/auth.js';
+import notificationRoutes from './routes/notifications.js';
+import createCommentRoutes from './routes/comments.js';
 
 const app = express();
 const server = createServer(app);
@@ -14,6 +17,8 @@ const io = new Server(server, { cors: { origin } });
 app.use(cors({ origin }));
 app.use(express.json());
 app.use('/api/auth', authRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/comments', createCommentRoutes(io));
 
 app.get('/api/health', (req, res) =>
   res.json({
@@ -40,8 +45,29 @@ app.post('/api/demo/import', (req, res) => {
   }, 400);
 });
 
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+
+  if (!token) return next();
+
+  try {
+    socket.user = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'development-secret'
+    );
+    next();
+  } catch {
+    next(new Error('Authentication failed'));
+  }
+});
+
 io.on('connection', socket => {
   socket.emit('system:ready', { message: 'Realtime lead updates connected' });
+
+  if (socket.user?.sub) {
+    socket.join('user:' + socket.user.sub);
+  }
+
   socket.on('join:import', batchId => socket.join('import:' + batchId));
 });
 
