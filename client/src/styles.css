@@ -6,9 +6,9 @@
   --text:#172033;
   --muted:#667085;
   --border:#e5e7eb;
-  --sidebar:#111827;
-  --sidebarText:#cbd5e1;
-  --button:#1f2937;
+  --sidebar:#0b2e25;
+  --sidebarText:#c9ded7;
+  --button:#145c47;
   --buttonText:#fff;
   color-scheme:light}
 
@@ -19,10 +19,10 @@ html[data-theme="dark"] {
   --text:#f1f5f9;
   --muted:#94a3b8;
   --border:#293548;
-  --sidebar:#070b14;
-  --sidebarText:#cbd5e1;
-  --button:#e2e8f0;
-  --buttonText:#111827;
+  --sidebar:#061d17;
+  --sidebarText:#b8d4ca;
+  --button:#2f8f70;
+  --buttonText:#fff;
   color-scheme:dark}
 
 * {
@@ -60,12 +60,12 @@ nav {
 
 .nav:hover,
 .nav.active {
-  background:#263244;
+  background:#164c3d;
   color:#fff}
 
 .theme-toggle {
   margin-top:24px;
-  background:#263244;
+  background:#164c3d;
   color:#fff;
   justify-content:center}
 main {
@@ -298,7 +298,7 @@ main {
 
 .sidebar-action:hover,
 .logout-button:hover {
-  background:#263244;
+  background:#164c3d;
   color:#fff;
 }
 
@@ -391,7 +391,7 @@ main {
 }
 
 .drop.dragging {
-  border-color:var(--text);
+  border-color:#2f8f70;
   background:var(--surface2);
   transform:scale(1.005);
 }
