@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
     avatar: String,
     coverPhoto: String,
     bio: { type: String, trim: true, maxlength: 500 },
+    occupation: { type: String, trim: true, maxlength: 120 },
     avatarPositionX: { type: Number, min: 0, max: 100, default: 50 },
     avatarPositionY: { type: Number, min: 0, max: 100, default: 50 },
     authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
